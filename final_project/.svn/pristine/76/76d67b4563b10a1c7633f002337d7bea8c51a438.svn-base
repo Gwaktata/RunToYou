@@ -1,0 +1,14 @@
+package kr.or.ddit.notification.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.notification.vo.NotificationVO;
+
+public interface NotificationMapper {
+	/**
+	 * 직원코드로 받은 알림 있나 확인
+	 * @param empCd
+	 * @return 알림VO
+	 */
+	public List<NotificationVO> checkNotification(String empCd);
+}

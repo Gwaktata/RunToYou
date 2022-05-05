@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="SynchronizeViewSettings">
+		<item key="linkWithEditor" value="false"/>
+		<item key="lastactiveparticipant_id" value="org.tigris.subversion.subclipse.participant"/>
+		<item key="lastactiveparticipant_sec_id" value="1649750105469"/>
+		<section name="org.tigris.subversion.subclipse.participant.1646735162900">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1646893938101">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1646894068973">
+			<item key="org.eclipse.team.ui.P_LAST_MODELPROVIDER" value="org.eclipse.team.ui.modelprovider_compressedfolders"/>
+			<item key="org.eclipse.team.ui.P_COMMIT_SET_ENABLED" value="false"/>
+			<item key="org.eclipse.team.ui.P_SYNCVIEWPAGE_MODE" value="2"/>
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1647336387581">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1647340625163">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1647345960262">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1647408936598">
+			<item key="org.eclipse.team.ui.P_LAST_MODELPROVIDER" value="org.eclipse.team.ui.modelprovider_compressedfolders"/>
+			<item key="org.eclipse.team.ui.P_COMMIT_SET_ENABLED" value="false"/>
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1647414273697">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1649469873091">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1649469924562">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1649741641079">
+		</section>
+		<section name="org.tigris.subversion.subclipse.participant.1649750105469">
+			<item key="org.eclipse.team.ui.P_LAST_MODELPROVIDER" value="org.eclipse.team.ui.modelprovider_compressedfolders"/>
+			<item key="org.eclipse.team.ui.P_COMMIT_SET_ENABLED" value="false"/>
+			<item key="org.eclipse.team.ui.P_SYNCVIEWPAGE_MODE" value="1"/>
+		</section>
+	</section>
+</section>

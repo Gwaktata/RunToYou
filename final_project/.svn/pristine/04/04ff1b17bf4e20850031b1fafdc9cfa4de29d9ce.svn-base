@@ -1,0 +1,25 @@
+package kr.or.ddit.emp.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.emp.vo.EmpVO;
+import kr.or.ddit.notice.vo.NoticeVO;
+
+public interface EmpService {
+
+	// 전체 직원 조회
+	public List<EmpVO> selectAll();
+	
+	// 직원 상세조회 
+	public EmpVO selectOne(String empCd);
+	
+	// 직원 등록
+	public int create(EmpVO empVO);
+	
+	// 직원 삭제
+	public int delete(String empCd);
+	
+	// 직원 정보 수정
+	public int update(EmpVO empVO);
+}

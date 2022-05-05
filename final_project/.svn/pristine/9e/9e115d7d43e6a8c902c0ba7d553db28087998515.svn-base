@@ -1,0 +1,380 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
+
+<link rel="stylesheet" href="/resources/fullcalendar/main.css">
+<script src="/resources/fullcalendar/main.js"></script>
+<script src="/resources/fullcalendar/ko.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script type="text/javascript">
+var csrfParameter = $("meta[name=_csrf_parameter]").attr("content");
+var csrfHeader = $("meta[name=_csrf_header]").attr("content");
+var csrfToken = $("meta[name=_csrf]").attr("content");
+
+$(document).ready(function() {
+	
+	//전체 예약목록 출력
+	$.ajax({
+		url:"/reservation/allList",
+		method:"get",
+		success: function (res) {
+			var list = res;
+			console.log(list)
+	
+			
+		    var Calendar = FullCalendar.Calendar;
+		    var Draggable = FullCalendar.Draggable;
+		    var calendarEl = document.getElementById('calendar');
+		
+		    var events = list.map(function(item) {
+				return {
+					title : item.pntNm,
+					start : item.rsvDate + "T" + item.rsvTime
+				}
+			});
+		    
+		    // initialize the calendar
+		    // -----------------------------------------------------------------
+		
+		    var calendar = new Calendar(calendarEl, {
+		      headerToolbar: {
+		        left: 'prev,next today',
+		        center: 'title',
+		        right: 'dayGridMonth,timeGridWeek'
+		      },
+		      initialView: 'dayGridMonth',
+		      selectable:true,
+		      editable: true,
+		      droppable: true, // this allows things to be dropped onto the calendar
+		      drop: function(info) {
+		        // is the "remove after drop" checkbox checked?
+		        if (checkbox.checked) {
+		          // if so, remove the element from the "Draggable Events" list
+		          info.draggedEl.parentNode.removeChild(info.draggedEl);
+		        }
+		      },
+		      locale:'ko',
+		      events: events,
+		      eventTimeFormat: {
+				    hour: '2-digit',
+				    minute: '2-digit',
+				    hour12: false
+				  }
+		    });
+		
+		    calendar.render();
+		}//end of success
+	});//end of ajax
+});//end of function
+  
+
+  
+//Byte 수 체크 제한
+function fnChkByte(obj, maxByte)
+{
+    var str = obj.value;
+    var str_len = str.length;
+
+
+    var rbyte = 0;
+    var rlen = 0;
+    var one_char = "";
+    var str2 = "";
+
+
+    for(var i=0; i<str_len; i++)
+    {
+        one_char = str.charAt(i);
+        if(escape(one_char).length > 4) {
+            rbyte += 2;                                         //한글2Byte
+        }else{
+            rbyte++;                                            //영문 등 나머지 1Byte
+        }
+        if(rbyte <= maxByte){
+            rlen = i+1;                                          //return할 문자열 갯수
+        }
+     }
+     if(rbyte > maxByte)
+     {
+        // alert("한글 "+(maxByte/2)+"자 / 영문 "+maxByte+"자를 초과 입력할 수 없습니다.");
+        alert("메세지는 최대 " + maxByte + "byte를 초과할 수 없습니다.")
+        str2 = str.substr(0,rlen);                                  //문자열 자르기
+        obj.value = str2;
+        fnChkByte(obj, maxByte);
+     }
+     else
+     {
+        document.getElementById('byteInfo').innerText = rbyte;
+     }
+}
+
+//신규예약
+function newres() {
+	$("#reservationVo").submit();
+}
+
+//예약 시간 출력 
+$(document).on("change","#hour", function() {
+	$(document).on("change","#min", function() {
+		var hourvalue = $("#hour option:selected").val();
+		var minvalue = $("#min option:selected").val();
+		var time = hourvalue +':'+ minvalue
+ 		//alert(time)
+		var timeVal = $("#rsvSTime").attr("value", time)
+		//alert(childVal + "1");
+		//alert(timeVal.val() + "2");
+		if(childVal == timeVal.val()){
+			swal("예약 불가","해당 시간은 이미 예약 완료되었습니다.", "warning");
+			//alert($("#min option:selected").val())
+			$("#min option:selected").attr("disabled", true)
+			$("#min option:selected").css("color", "lightgray")
+			$("#min option:selected").prop("selected", false);
+			
+		}
+
+	})
+})
+
+// 의사 출력 
+$(document).on("change","#selectmajor", function() {
+	
+	//var data = {"major" : $("#selectmajor option:selected").val()};
+	
+	var data = {};
+
+	data[csrfParameter]=csrfToken;
+	data["major"] = $("#selectmajor option:selected").val();
+	
+	$.ajax({
+		url:"/patients/doctorList",
+		method: "post",
+		data: data,
+		success: function(dres) {
+			//console.log(dres);
+			//alert(dres)
+			var listHtml = '<option value="" label="=담당의사=">=담당의사=</option>';
+			if(dres!=''){
+				for(var i in dres){
+					listHtml +='<option id="optdoc" label="'+dres[i].empNm+'">'+dres[i].empNm+'_'+dres[i].empCd+'</option>';
+				}
+			}
+			$("#chrDr").html(listHtml);
+			//alert(listHtml);
+			
+		}
+	})
+})
+
+$(document).on("change","#chrDr", function() {
+	var data = {};
+	var split = $("#chrDr option:selected").val().split('_');
+	
+	data[csrfParameter]=csrfToken;
+	data["empCd"] = split[1].trim();
+	
+	$("#empCd").attr("value", split[1].trim());
+	$("#empNm").attr("value", split[0].trim());
+	//console.log(split[1].trim());
+	
+	//의사별 예약목록 출력
+	$.ajax({
+		url:"/reservation/docList",
+		method:"post",
+		data: data,
+		success: function (res) {
+			var list = res;
+			//console.log(list)
+	
+			
+		    var Calendar = FullCalendar.Calendar;
+		    var Draggable = FullCalendar.Draggable;
+		    var calendarEl = document.getElementById('calendar');
+		
+		    var events = list.map(function(item) {
+				return {
+					title : item.pntNm,
+					start : item.rsvDate + "T" + item.rsvTime
+				}
+			});
+		    
+		    // initialize the calendar
+		    // -----------------------------------------------------------------
+		
+		    var calendar = new Calendar(calendarEl, {
+		      headerToolbar: {
+		        left: 'prev,next today',
+		        center: 'title',
+		        right: 'dayGridMonth,timeGridWeek'
+		      },
+		      initialView: 'dayGridMonth',
+		      selectable:true,
+		      editable: true,
+		      droppable: true, // this allows things to be dropped onto the calendar
+		      drop: function(info) {
+		        // is the "remove after drop" checkbox checked?
+		        if (checkbox.checked) {
+		          // if so, remove the element from the "Draggable Events" list
+		          info.draggedEl.parentNode.removeChild(info.draggedEl);
+		        }
+		      },
+		      locale:'ko',
+		      dateClick:function(info){
+		    	  var today = new Date();
+		    	  var year = today.getFullYear();
+		    	  var month = ('0' + (today.getMonth() + 1)).slice(-2);
+		    	  var day = ('0' + today.getDate()).slice(-2);
+		
+		    	  var todayFormat = year + '-' + month  + '-' + day;
+		    	  
+		    	  if(info.dateStr < todayFormat){
+		    		  swal("예약 불가","예약은 오늘 날짜 이후부터 가능합니다.", "warning");
+		    	  }else if(todayFormat <= info.dateStr){
+			      	$("#exampleModal").modal("show");
+			      	$("#rsvDate").attr("value", info.dateStr)    		  
+		    	  }
+		      },
+		      events: events,
+		      eventTimeFormat: {
+				    hour: '2-digit',
+				    minute: '2-digit',
+				    hour12: false
+				  }
+		    });
+		
+		    calendar.render();
+		}//end of success
+	});//end of ajax
+})
+
+$(document).on("click", ".fc-daygrid-day-frame", function(){
+	var child = $(this).find(".fc-event-time");
+	//console.log(child);
+	
+	childVal = $(child).text();
+	//console.log(childVal, "1");
+	
+	
+})
+
+
+</script>
+<style>
+#calendar{
+	width: 500px;
+}
+.timetable{
+	width: 80%;
+	margin-left: 10%; 
+	margin-top: 10%; 
+	text-align: center;
+}
+.harftime{
+	border-top: 1px dotted;
+}
+</style>
+<div class="main_content_iner ">
+	<div class="container-fluid p-0">
+		<div class="row justify-content-center">
+		<div class="col-12">
+		<div class="QA_section">
+		<div class="white_box_tittle list_header">
+			<h4>예약</h4>
+		</div>
+		<div class="white_box" style="height: 100%;">
+			<div id="calendar" style="float: left; margin-right: 100px;"></div>
+		<!-- 환자 검색 -->
+		<h6>환자 검색</h6>
+		<input type="search">
+		<div class="profile_info_iner">
+<p>Neurologist </p>
+<h5>Dr. Robar Smith</h5>
+<div class="profile_info_details">
+<a href="#">My Profile <i class="ti-user"></i></a>
+<a href="#">Settings <i class="ti-settings"></i></a>
+<a href="#">Log Out <i class="ti-shift-left"></i></a>
+</div>
+</div>
+		<!-- 환자 검색 -->
+		<h6>환자 검색</h6>
+		<input type="search">
+		<!-- 의사  -->
+		<h6>담당 의사</h6>
+		<form:form modelAttribute="patientsVo" name="patientsVo" method="get" action="/reservation/main">
+		<form:select path="" id="selectmajor">
+			<form:option value="" label="=진료과목="/>	
+			<c:forEach var="major" items="${majorlist}">
+				<form:option value="${major.major}" label="${major.major}" />
+			</c:forEach>
+		</form:select>
+		
+		<form:select path="chrDr" id="chrDr" style="width:100px;">
+			
+		</form:select>
+		</form:form>
+		<!-- 의사  -->
+		</div>
+		</div>
+		</div>
+		</div>
+	</div>
+</div>
+
+
+ <!-- Modal --> 
+ <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document"> 
+  <div class="modal-content">
+   <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">신규예약</h5>
+     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+     </button> 
+   </div> 
+  <div class="modal-body">
+  <form:form modelAttribute="reservationVo" method="post" name="addreservation" action="/reservation/addreservation">
+  <sec:csrfInput/>
+	담당 의사 : <input type="text" id="empNm" name="empNm">	
+	<input type="text" id="empCd" name="empCd" style="display: none;">	
+	<br><br>	
+	예약 일자 : <input type="text" id="rsvDate" name="rsvDate">
+	<br><br>
+	예약 시간 : <select id="hour">
+				<option>-선택-</option>
+				<c:forEach var="rhour" begin="9" end="11" step="1">
+					<option id="${rhour}">${rhour}</option>
+				</c:forEach>
+				<option disabled="disabled" style="color: lightgray">12</option>
+				<c:forEach var="rhour" begin="13" end="18" step="1">
+					<option id="${rhour}">${rhour}</option>
+				</c:forEach>
+			</select>시
+			<select id="min">
+				<option>-선택-</option>
+				<option id="00">00</option>
+				<option id="30">30</option>
+			</select>분
+			<input type="text" id="rsvSTime" name="rsvSTime" style="display: none;">
+	<br><br>	
+	환자 이름 : <input type="text" id="pntNm" name="pntNm">	
+	<input type="text" id="pntCd" name="pntCd" style="display: none;">	
+	<br><br>
+	
+	환자 구분 : <input type="radio" name="sortpnt" value="ini">_초진&nbsp;
+	<input type="radio" name="sortpnt" value="re">_재진
+	<br><br>	
+	내원 사유 : 
+	<br>
+	<textarea id="symptoms" name="symptoms" cols="63" rows="4" style="resize: none;" onKeyUp="javascript:fnChkByte(this,'100')"></textarea>
+	<div style="float: right;"><span id="byteInfo">0</span>/100bytes</div>
+  </form:form>
+  </div> 
+  <div class="modal-footer">
+   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary" onclick="newres()">등록</button>
+  </div> 
+  </div> 
+  </div> 
+ </div>

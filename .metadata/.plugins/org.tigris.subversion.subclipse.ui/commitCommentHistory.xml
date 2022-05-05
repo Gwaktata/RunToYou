@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CommitComments>	<CommitComment>DB 리뉴얼</CommitComment>
+	<CommitComment>의료진 코드 상태 varchar2(100)으로 수정</CommitComment>
+	<CommitComment>간호사 구분 삭제함</CommitComment>
+</CommitComments>

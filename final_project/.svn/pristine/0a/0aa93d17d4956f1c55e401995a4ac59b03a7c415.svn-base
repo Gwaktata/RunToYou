@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.notification.mapper.NotificationMapper">
+	<!-- 회원상세정보 resultMap -->
+	<resultMap type="kr.or.ddit.notification.vo.NotificationVO" id="notificationMap">
+		<id     property="notNo" column="NOT_NO" />
+		<result property="empCd" column="EMP_CD" />
+		<result property="pntCd" column="PNT_CD" />
+		<result property="cmCd" column="CM_CD" />
+		<result property="notYn" column="NOT_YN" />
+		<result property="cdNm" column="CD_NM" />
+		<result property="cdEx" column="CD_EX" />
+	</resultMap>
+	
+	<!-- 본인 알림 조회 -->
+	<select id="checkNotification" parameterType="string" resultMap="notificationMap">
+		SELECT N.NOT_NO,N.EMP_CD,N.PNT_CD,N.CM_CD,N.NOT_YN,C.CD_NM,C.CD_EX
+		  FROM NOTIFICATION N, CM_CD C
+		 WHERE N.CM_CD=C.CM_CD
+		   AND N.EMP_CD=#{empCd}
+		   AND N.NOT_YN=0
+	</select>
+	
+	
+</mapper>

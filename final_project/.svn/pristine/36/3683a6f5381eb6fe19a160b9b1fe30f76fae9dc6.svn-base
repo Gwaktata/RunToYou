@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC 
+        "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" 
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+        
+<tiles-definitions>
+    
+   	<!-- 레이아웃을 적용하는 화면-->
+    <definition name="tiles-layout" template="/WEB-INF/tiles/tilesLayout/baseLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/tiles/tilesView/header.jsp" />
+        <put-attribute name="aside" value="/WEB-INF/tiles/tilesView/aside.jsp" />        
+        <put-attribute name="title" value="DJ.DOC" />
+        <put-attribute name="footer" value="/WEB-INF/tiles/tilesView/footer.jsp" />
+    </definition>
+ 
+    <!-- 컨트롤러 view Return Role -->
+	<definition name="*/*" extends="tiles-layout">      
+		<!-- {1}은 최상위 메뉴 ex) bbs, login... {2}는 세부기능 ex) list, detail, form... -->
+      <put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+    </definition>
+    
+</tiles-definitions>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.or.ddit.emp.mapper.EmpMapper">
+
+	<!-- 전체 직원 조회 -->
+	<select id="selectAll" resultType="empVO">
+		 SELECT EMP_CD,SEC_CD,EMP_NM,EMP_PRNO,EMP_SEX,EMP_ADDR,EMP_HP,POSITION,LCNS_NO,EMP_PIC,STATE_CD
+   				,HIRE_DATE,LEAVE_YN,ENABLED,EMP_MAIL,EMP_PW
+		   FROM EMP
+	</select>	
+	
+	<!-- 직원 상세정보 조회 -->
+	<select id="selectOne" parameterType="string" resultType="empVO">
+		SELECT EMP_CD,SEC_CD,EMP_NM,EMP_PRNO,EMP_SEX,EMP_ADDR,EMP_HP,POSITION,LCNS_NO,EMP_PIC,STATE_CD
+   				,HIRE_DATE,LEAVE_YN,ENABLED,EMP_MAIL,EMP_PW
+		   FROM EMP
+		  WHERE EMP_CD=#{empCd}
+	</select>	   
+	
+	<!-- 직원 등록 -->
+	<insert id="create" parameterType="empVO">
+		INSERT INTO EMP (EMP_CD,SEC_CD,EMP_NM,POSITION,LCNS_NO,STATE_CD,EMP_PW)
+			 VALUES ('EMP'||to_char(lpad(EMP_CD_SEQ.nextval,'5',0))
+        			,#{secCd},#{empNm},#{position},'LC'||to_char(lpad(LCNS_NO_SEQ.nextval,'4',0)),'ES0'
+        			,'EMP'||to_char(lpad(EMP_CD_SEQ.nextval,'5',0))
+        )
+	</insert>	   
+	
+	<!-- 직원 삭제 -->
+	<delete id="delete" parameterType="string">
+		DELETE FROM EMP WHERE EMP_CD = #{empCd}
+	</delete>
+	
+	<!-- 
+	   직원 수정 
+	<update id="update" parameterType="empVO">
+		UPDATE NOTICE 
+   		   SET TITLE=#{title}, CONTENT=#{content}, WRITER=#{writer}, PRIV_BOUNDS=#{privBounds},LAST_MDFY_DT=SYSDATE
+ 		 WHERE NTC_NO=#{ntcNo}
+	</update>
+	 -->
+</mapper>

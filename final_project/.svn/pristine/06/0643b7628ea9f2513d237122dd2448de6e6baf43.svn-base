@@ -1,0 +1,28 @@
+package kr.or.ddit.notification;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.notification.service.NotificationService;
+
+@RequestMapping("/notification")
+@Controller
+public class NotificationController {
+	private static final Logger logger = 
+			LoggerFactory.getLogger(NotificationController.class);
+	
+	@Autowired
+	NotificationService notificationService;
+	
+	@PostMapping("/list")
+	public String checkNotification(Model model,@RequestParam String empCd) {
+		model.addAttribute("notificationVO", notificationService.checkNotification(empCd));
+		return "notification/list";
+	}
+}
